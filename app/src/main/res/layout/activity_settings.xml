@@ -10,6 +10,7 @@
         android:layout_height="48dp"
         android:id="@+id/ab_settings"
         android:background="@color/white"
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,112 +1,134 @@
 package com.example.newsapp.ui.fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.AbsListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsCategoryBinding
 import com.example.newsapp.ui.MainActivity
+import com.example.newsapp.util.Constants
+import com.example.newsapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
-import java.util.Locale
 
 
-class CategoryFragment(private var category: String) : Fragment() , NewsAdapter.TTSClickListener {
+class CategoryFragment(private var category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsCategoryBinding
     private lateinit var newsAdapter: NewsAdapter
-    private lateinit var textToSpeech: TextToSpeech
-    private val autoScrollHandler = Handler()
 
+    private var countryCode : String = "in"
+    private var currentPage = 1
 
+    var isLastPage = false
+    var isLoading = false
+    var isScrolling=false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = NewsCategoryBinding.inflate(inflater, container, false)
-        textToSpeech = TextToSpeech(activity){
-                status -> if(status == TextToSpeech.SUCCESS){
-            textToSpeech.language = Locale.ENGLISH
-            }
-        }
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
-        viewModel.getCategoryNews(category)
+        getSettings()
+        viewModel.initialiseCategory()
+
+        isLastPage = false
+        isLoading = false
+        isScrolling=false
+        viewModel.getCategoryNews(category, countryCode, currentPage)
         setUpRecyclerView()
 
-        viewModel.categoryNews.observe(viewLifecycleOwner, Observer {
-                response -> when(response){
-            is Resource.Success -> {
-                hideProgressBar()
-                response.data?.let {
-                        newsResponse ->  newsAdapter.differ.submitList(newsResponse.articles)
-                    Log.d("TAG", "Response loaded")
+        viewModel.categoryNews.observe(viewLifecycleOwner, Observer { response ->
+            when(response){
+                is Resource.Success -> {
+                    hideProgressBar()
+                    response.data?.let {
+                            newsResponse ->
+                        newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        val totalPages = newsResponse.totalResults / Constants.QUERY_PAGE_SIZE + 2
+                        isLastPage = viewModel.categoryNewsPage == totalPages
+                        isLoading = false
+                        Log.d("Category Fragment", "Response loaded")
+                    }
                 }
-            }
 
-            is Resource.Error -> {
-                hideProgressBar()
-                response.message?.let {message ->
-                    Log.e("TAG", "Error loading response: $message")
+                is Resource.Error -> {
+                    hideProgressBar()
+                    response.message?.let {message ->
+                        Log.e("Category Fragment", "Error loading response: $message")
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressBar()
                 }
             }
-            is Resource.Loading -> {
-                showProgressBar()
-            }
-        }
         }  )
     }
 
     private fun setUpRecyclerView(){
         newsAdapter = NewsAdapter()
-        binding.rvSports.apply {
+        binding.rvCategory.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
-            Log.d("Sports News" ,  "recycler applied")
+            addOnScrollListener(this@CategoryFragment.scrollListener)
         }
-        autoRead()
     }
 
-    private fun autoRead() {
-        val layoutManager = binding.rvSports.layoutManager as LinearLayoutManager
-        var firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-        autoScrollHandler.postDelayed(object : Runnable{
-            override fun run() {
-                Log.d("Scrollable", "Scrolling ....")
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+            val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+            val visibleItemCount = layoutManager.childCount
+            val totalItemCount = layoutManager.itemCount
 
-                Log.d("Scrollable", "$firstVisibleItem")
-                binding.rvSports.smoothScrollToPosition(firstVisibleItem + 1)
-                firstVisibleItem +=1
-                autoScrollHandler.postDelayed(this, 10000)
-            }
-        }, 10000)
+            val isNotLoadingAndNotLastPage = !isLoading && !isLastPage
+            val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
+            val isNotAtBeginning = firstVisibleItemPosition >= 0
+            val isTotalMoreThanVisible = totalItemCount >= QUERY_PAGE_SIZE
 
-        binding.rvSports.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-                val holder = binding.rvSports.findViewHolderForLayoutPosition(firstVisibleItem)
-                val itemToRead = holder?.itemView?.findViewById<TextView>(R.id.tv_title)?.text.toString()
-                onTTSClick(itemToRead, firstVisibleItem)
+            val shouldPaginate =
+                 isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
+
+            if (shouldPaginate) {
+                currentPage++
+                Log.d("Pagination", "Loading page $currentPage")
+                viewModel.getCategoryNews(category,countryCode,currentPage)
+                isScrolling=false
             }
-        })
+        }
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                isScrolling=true
+            }
+        }
+    }
+    private fun getSettings() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val setCountryCode = sharedPreferences.getString("country_code", "in")
+        countryCode = setCountryCode ?: "in"
     }
 
     private fun hideProgressBar() {
@@ -117,31 +139,21 @@ class CategoryFragment(private var category: String) : Fragment() , NewsAdapter.
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    override fun onTTSClick(text: String, position: Int) {
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if(textToSpeech.isSpeaking){
-            textToSpeech.stop()
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key == "country_code" || key == "language"){
+            getSettings()
+            viewModel.initialiseCategory()
+            isLastPage = false
+            isLoading = false
+            isScrolling=false
+            viewModel.getCategoryNews(category, countryCode, currentPage)
+            setUpRecyclerView()
         }
-        autoScrollHandler.removeCallbacksAndMessages(null)
-    }
-
-    override fun onResume() {
-        if(!textToSpeech.isSpeaking){
-            autoRead()
-        }
-        super.onResume()
     }
 
     override fun onDestroy() {
-        if(textToSpeech.isSpeaking){
-            textToSpeech.stop()
-        }
-        textToSpeech.shutdown()
-        autoScrollHandler.removeCallbacksAndMessages(null)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
 

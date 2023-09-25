@@ -1,7 +1,7 @@
 package com.example.newsapp.model
 
 data class NewsResponse(
-    val articles: List<News>,
+    val articles: MutableList<News>,
     val status: String,
     val totalResults: Int
 )

@@ -14,30 +14,20 @@
             app:defaultValue="false"/>
 
         <ListPreference
+            app:key="country_code"
             app:defaultValue="in"
             app:entries="@array/country_entries"
             app:entryValues="@array/country_values"
-            app:key="country_code"
             app:title="Country"
-            app:useSimpleSummaryProvider="true" />
-    </PreferenceCategory>
-
-
-    <PreferenceCategory app:title="@string/messages_header">
-
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
+            app:key="language"
+            app:defaultValue="en"
+            app:entries="@array/language_entries"
+            app:entryValues="@array/language_values"
+            app:title="Language"
             app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
 </PreferenceScreen>
