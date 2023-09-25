@@ -21,7 +21,7 @@ import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
 
 
-class CategoryFragment(private var category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class CategoryFragment( var category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
 
     private lateinit var viewModel: NewsViewModel
@@ -39,6 +39,7 @@ class CategoryFragment(private var category: String) : Fragment(), SharedPrefere
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = NewsCategoryBinding.inflate(inflater, container, false)
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)

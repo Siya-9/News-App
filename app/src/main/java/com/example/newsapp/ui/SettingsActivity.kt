@@ -1,6 +1,8 @@
 package com.example.newsapp.ui
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
@@ -8,9 +10,13 @@ import androidx.preference.PreferenceManager
 import com.example.newsapp.R
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener{
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fr_settings, SettingsFragment())
             .commit()

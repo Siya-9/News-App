@@ -1,7 +1,10 @@
 package com.example.newsapp.ui
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
         Log.d("Main", "Start")
         setContentView(activity_main)
+
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()

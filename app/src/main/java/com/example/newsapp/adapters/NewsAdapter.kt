@@ -49,7 +49,8 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
         Log.d("Adapter", "on bind view holder set up")
         val article = differ.currentList[position]
         holder.itemView.apply {
-            Glide.with(this).load(article.urlToImage).into(holder.itemView.findViewById(R.id.iv_image))
+
+            Glide.with(this).load(article.urlToImage).placeholder(R.drawable.placeholder_image).into(holder.itemView.findViewById(R.id.iv_image))
             holder.itemView.findViewById<TextView>(R.id.tv_title).text = article.title
             holder.itemView.findViewById<TextView>(R.id.tv_description).text = article.description
         }
