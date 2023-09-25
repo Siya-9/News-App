@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -14,14 +15,12 @@ import com.example.newsapp.R.layout.activity_main
 import com.example.newsapp.database.NewsDatabase
 import com.example.newsapp.ui.fragment.CategoryFragment
 import com.example.newsapp.ui.fragment.SavedFragment
-import com.example.newsapp.ui.fragment.TrendingFragment
+import com.example.newsapp.ui.fragment.SearchFragment
 import com.example.newsapp.viewmodel.NewsRepository
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.example.newsapp.viewmodel.NewsViewModelProviderFactory
 import com.google.android.material.navigation.NavigationView
 
-const val TAG = "TAG"
-// API KEY = e5b4101e11694658b8c4538646ce7985
 class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: NewsViewModel
@@ -33,18 +32,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val newsRepository = NewsRepository(NewsDatabase(this))
-       // val settingRepository = SettingRepository(PreferenceManager.getDefaultSharedPreferences(this))
         val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
-        viewModel = ViewModelProvider(this, viewModelProviderFactory).get(NewsViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
         Log.d("Main", "Start")
         setContentView(activity_main)
 
-       // val navView = findViewById<NavigationView>(R.id.nav_view)
-
-
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, TrendingFragment())
+                .replace(R.id.fragment_container, CategoryFragment("trending"))
                 .commit()
         }
 
@@ -71,10 +66,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_trending -> {
                     // Navigate to the Trending fragment
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, TrendingFragment())
+                        .replace(R.id.fragment_container, CategoryFragment("trending"))
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
                 }
                 R.id.nav_saved -> {
                     // Navigate to the Saved fragment
@@ -82,7 +76,6 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, SavedFragment())
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
                 }
                 R.id.nav_sports -> {
                     // Navigate to the Saved fragment
@@ -90,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, CategoryFragment("sports"))
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
+
                 }
                 R.id.nav_technology -> {
                     // Navigate to the Saved fragment
@@ -98,7 +91,6 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, CategoryFragment("technology"))
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
                 }
                 R.id.nav_business -> {
                     // Navigate to the Saved fragment
@@ -106,7 +98,6 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, CategoryFragment("business"))
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
                 }
                 R.id.nav_health -> {
                     // Navigate to the Saved fragment
@@ -114,15 +105,31 @@ class MainActivity : AppCompatActivity() {
                         .replace(R.id.fragment_container, CategoryFragment("health"))
                         .commit()
                     drawerLayout.closeDrawer(GravityCompat.START)
-
                 }
                 R.id.nav_settings -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
                     val intent = Intent(this, SettingsActivity::class.java)
                     startActivity(intent)
                 }
-                else -> false
             }
             true
+        }
+
+    }
+
+    fun onSearchIconClick(view : View){
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, SearchFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onBackPressed() {
+        if(supportFragmentManager.backStackEntryCount > 0){
+            supportFragmentManager.popBackStack()
+        }
+        else{
+            finish()
         }
     }
     override fun onPostCreate(savedInstanceState: Bundle?) {

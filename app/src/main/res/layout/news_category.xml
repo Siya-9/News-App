@@ -6,7 +6,7 @@
     tools:context=".ui.fragment.CategoryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_sports"
+        android:id="@+id/rv_category"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
