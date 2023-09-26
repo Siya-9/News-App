@@ -15,5 +15,7 @@ class SavedFragment : Fragment(R.layout.news_saved) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
+
+
     }
 }

@@ -7,11 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsCategoryBinding
 import com.example.newsapp.ui.MainActivity
@@ -21,12 +25,17 @@ import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
 
 
-class CategoryFragment(private var category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private val args: CategoryFragmentArgs by navArgs()
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsCategoryBinding
     private lateinit var newsAdapter: NewsAdapter
+    var category = "trending"
+    init {
+
+    }
 
     private var countryCode : String = "in"
     private var currentPage = 1
@@ -49,14 +58,27 @@ class CategoryFragment(private var category: String) : Fragment(), SharedPrefere
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
+
         getSettings()
         viewModel.initialiseCategory()
-
         isLastPage = false
         isLoading = false
         isScrolling=false
+
+
+        category = args.category
         viewModel.getCategoryNews(category, countryCode, currentPage)
+
         setUpRecyclerView()
+
+        val navController = findNavController()
+        newsAdapter.setOnItemClickListener {
+            val bundle = Bundle().apply {
+                putSerializable("news", it)
+            }
+            val action =
+            navController.navigate(R.id.action_categoryFragment_to_newsFragment, bundle)
+        }
 
         viewModel.categoryNews.observe(viewLifecycleOwner, Observer { response ->
             when(response){
@@ -75,7 +97,7 @@ class CategoryFragment(private var category: String) : Fragment(), SharedPrefere
                 is Resource.Error -> {
                     hideProgressBar()
                     response.message?.let {message ->
-                        Log.e("Category Fragment", "Error loading response: $message")
+                        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
                     }
                 }
                 is Resource.Loading -> {
@@ -86,7 +108,7 @@ class CategoryFragment(private var category: String) : Fragment(), SharedPrefere
     }
 
     private fun setUpRecyclerView(){
-        newsAdapter = NewsAdapter()
+        newsAdapter = NewsAdapter ()
         binding.rvCategory.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
@@ -156,5 +178,6 @@ class CategoryFragment(private var category: String) : Fragment(), SharedPrefere
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
+
 
 }

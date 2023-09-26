@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsSearchBinding
 import com.example.newsapp.ui.MainActivity
@@ -37,7 +40,6 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = NewsSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,6 +51,15 @@ class SearchFragment : Fragment() {
         getSettings()
         setUpRecyclerView()
 
+        val navController = findNavController()
+        newsAdapter.setOnItemClickListener {
+            Log.d("Search Fragment", "Item clicked")
+            val bundle = Bundle().apply {
+                putSerializable("news", it)
+            }
+            navController.navigate(R.id.action_searchFragment_to_newsFragment, bundle)
+            Log.d("Search Fragment", "Navigated")
+        }
         // coroutine to delay search request on api
         var job : Job? = null
 
@@ -82,7 +93,7 @@ class SearchFragment : Fragment() {
             is Resource.Error -> {
                 hideProgressBar()
                 response.message?.let {message ->
-                    Log.e("Search Fragment", "Error loading response: $message")
+                    Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
                 }
             }
             is Resource.Loading -> {

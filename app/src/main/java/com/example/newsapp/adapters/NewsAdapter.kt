@@ -13,8 +13,7 @@ import com.example.newsapp.R
 import com.example.newsapp.model.News
 
 
-class NewsAdapter: RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
-
+class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     inner class NewsViewHolder( itemView : View) : RecyclerView.ViewHolder(itemView){
     }
@@ -30,7 +29,7 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
     }
 
     interface TTSClickListener{
-        fun onTTSClick(text: String, position: Int)
+        fun onTTSClick(text: String)
     }
     val differ = AsyncListDiffer(this, diffCallback)
 
@@ -47,12 +46,21 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         Log.d("Adapter", "on bind view holder set up")
-        val article = differ.currentList[position]
+        val news = differ.currentList[position]
         holder.itemView.apply {
-            Glide.with(this).load(article.urlToImage).into(holder.itemView.findViewById(R.id.iv_image))
-            holder.itemView.findViewById<TextView>(R.id.tv_title).text = article.title
-            holder.itemView.findViewById<TextView>(R.id.tv_description).text = article.description
+            Glide.with(this).load(news.urlToImage).into(holder.itemView.findViewById(R.id.iv_image))
+            holder.itemView.findViewById<TextView>(R.id.tv_title).text = news.title
+            holder.itemView.findViewById<TextView>(R.id.tv_description).text = news.description
+            setOnClickListener {
+                Log.d("Adapter", "item clicked")
+                onItemClickListener?.let { it(news) }
+            }
         }
     }
 
+    private var onItemClickListener: ((News) -> Unit )? = null
+
+    fun setOnItemClickListener(listener : (News) -> Unit){
+        onItemClickListener = listener
+    }
 }

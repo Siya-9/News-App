@@ -10,11 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.newsapp.R
-import com.example.newsapp.R.layout.activity_main
 import com.example.newsapp.database.NewsDatabase
 import com.example.newsapp.ui.fragment.CategoryFragment
-import com.example.newsapp.ui.fragment.SavedFragment
 import com.example.newsapp.ui.fragment.SearchFragment
 import com.example.newsapp.viewmodel.NewsRepository
 import com.example.newsapp.viewmodel.NewsViewModel
@@ -27,23 +28,31 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
-
+    private lateinit var navController : NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val newsRepository = NewsRepository(NewsDatabase(this))
-        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
-        viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
-        Log.d("Main", "Start")
-        setContentView(activity_main)
-
-        if(savedInstanceState == null){
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CategoryFragment("trending"))
-                .commit()
-        }
+        setContentView(R.layout.activity_main)
 
         drawerLayout = findViewById(R.id.drawer_layout)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container)
+                    as NavHostFragment
+        navController = navHostFragment.navController
+        findViewById<NavigationView>(R.id.nav_view).setupWithNavController(navController)
+
+        val newsRepository = NewsRepository(NewsDatabase(this))
+        val viewModelProviderFactory = NewsViewModelProviderFactory(application, newsRepository)
+        viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
+        Log.d("Main", "Start")
+
+
+        if(savedInstanceState == null){
+            val bundle = Bundle().apply {
+                putString("category", "trending")
+            }
+            navController.navigate(R.id.action_categoryFragment_self, bundle)
+        }
+
 
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -64,46 +73,47 @@ class MainActivity : AppCompatActivity() {
             // Handle menu item clicks here
             when (menuItem.itemId) {
                 R.id.nav_trending -> {
-                    // Navigate to the Trending fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CategoryFragment("trending"))
-                        .commit()
+                    val bundle = Bundle().apply {
+                        putString("category", "trending")
+                    }
+                    navController.navigate(R.id.action_categoryFragment_self, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.nav_saved -> {
-                    // Navigate to the Saved fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, SavedFragment())
-                        .commit()
+                    if(supportFragmentManager.findFragmentById(R.id.fragment_container) is CategoryFragment) {
+                        navController.navigate(R.id.action_categoryFragment_to_savedFragment)
+                    }else if(supportFragmentManager.findFragmentById(R.id.fragment_container) is SearchFragment) {
+                        navController.navigate(R.id.action_searchFragment_to_savedFragment)
+                    }
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.nav_sports -> {
-                    // Navigate to the Saved fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CategoryFragment("sports"))
-                        .commit()
+                    val bundle = Bundle().apply {
+                        putString("category", "sports")
+                    }
+                    navController.navigate(R.id.action_categoryFragment_self, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
 
                 }
                 R.id.nav_technology -> {
-                    // Navigate to the Saved fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CategoryFragment("technology"))
-                        .commit()
+                    val bundle = Bundle().apply {
+                        putString("category", "technology")
+                    }
+                    navController.navigate(R.id.action_categoryFragment_self, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.nav_business -> {
-                    // Navigate to the Saved fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CategoryFragment("business"))
-                        .commit()
+                    val bundle = Bundle().apply {
+                        putString("category", "business")
+                    }
+                    navController.navigate(R.id.action_categoryFragment_self, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.nav_health -> {
-                    // Navigate to the Saved fragment
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CategoryFragment("health"))
-                        .commit()
+                    val bundle = Bundle().apply {
+                        putString("category", "health")
+                    }
+                    navController.navigate(R.id.action_categoryFragment_self, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.nav_settings -> {
@@ -117,18 +127,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
     fun onSearchIconClick(view : View){
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SearchFragment())
-            .addToBackStack(null)
-            .commit()
+            navController.navigate(R.id.action_categoryFragment_to_searchFragment)
     }
 
     override fun onBackPressed() {
-        if(supportFragmentManager.backStackEntryCount > 0){
-            supportFragmentManager.popBackStack()
-        }
-        else{
+        if (!navController.popBackStack()) {
+            // Call finish() on your Activity
             finish()
         }
     }

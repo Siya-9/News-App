@@ -22,16 +22,22 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     }
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
-            "auto_read" -> {
-                val prefs = sharedPreferences?.getBoolean("auto_read", false)
-            }
-            "country_code" -> {
-                //Toast.makeText(this, "Make sure to select appropriate Language", Toast.LENGTH_LONG).show()
-            }
-            "language" -> {
-                //Toast.makeText(this, "Make sure to select appropriate Country", Toast.LENGTH_LONG).show()
+            "dark_mode" -> {
+                val prefs = sharedPreferences?.getBoolean("dark_mode", false) ?: false
+                //setAppTheme(prefs)
             }
         }
+    }
+
+    private fun setAppTheme(prefs: Boolean) {
+        val themeId = if(prefs){
+            R.style.Base_Theme_NewsApp_Dark
+        }else{
+            R.style.Base_Theme_NewsApp
+        }
+//
+//        this.setTheme(themeId)
+//        this.recreate()
     }
 
     override fun onDestroy() {
