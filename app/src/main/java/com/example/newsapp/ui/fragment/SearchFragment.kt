@@ -71,8 +71,8 @@ class SearchFragment : Fragment() {
                     if(editable.toString() != keyword){
                         viewModel.initialiseSearch()
                     }
-                    viewModel.getSearchNews(editable.toString(), language, currentPage)
                     keyword = editable.toString()
+                    viewModel.getSearchNews(keyword, language, currentPage)
                 }
             }
         }
