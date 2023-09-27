@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fr_search"
     tools:context=".ui.fragment.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,8 +15,8 @@
             android:id="@+id/et_Search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search..."
-            android:maxLines="1"
+            android:hint="@string/search"
+            android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +25,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_SearchNews"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:paddingBottom="50dp"
+            android:layout_height="@dimen/_0dp"
+            android:paddingBottom="@dimen/_50dp"
             android:clipToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_Search"
@@ -39,7 +39,6 @@
             android:layout_height="wrap_content"
             android:visibility="invisible"
             android:background="@android:color/transparent"
-            android:layout_centerInParent="false"
             android:layout_gravity="center|center_horizontal|center_vertical" />
 
 </FrameLayout>

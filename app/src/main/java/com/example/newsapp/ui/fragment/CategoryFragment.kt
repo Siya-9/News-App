@@ -1,5 +1,6 @@
 package com.example.newsapp.ui.fragment
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -10,32 +11,25 @@ import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsCategoryBinding
 import com.example.newsapp.ui.MainActivity
+import com.example.newsapp.ui.NewsActivity
 import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
 
 
-class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private val args: CategoryFragmentArgs by navArgs()
+class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsCategoryBinding
     private lateinit var newsAdapter: NewsAdapter
-    var category = "trending"
-    init {
 
-    }
 
     private var countryCode : String = "in"
     private var currentPage = 1
@@ -58,26 +52,23 @@ class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChang
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
-
-        getSettings()
-        viewModel.initialiseCategory()
-        isLastPage = false
-        isLoading = false
-        isScrolling=false
-
-
-        category = args.category
-        viewModel.getCategoryNews(category, countryCode, currentPage)
-
         setUpRecyclerView()
 
-        val navController = findNavController()
         newsAdapter.setOnItemClickListener {
-            val bundle = Bundle().apply {
-                putSerializable("news", it)
+            if(it.url != null) {
+                val description = it.description ?: "description"
+                val title = it.title ?: "title"
+                val content = it.content ?: "content"
+                Log.d("LogBefore", description)
+                Log.d("LogBefore", content)
+                val intent = Intent(context, NewsActivity::class.java)
+                intent.putExtra("url", it.url)
+                    .putExtra("title", title)
+                    .putExtra("description", description)
+                    .putExtra("content", content)
+                context?.startActivity(intent)
             }
-            val action =
-            navController.navigate(R.id.action_categoryFragment_to_newsFragment, bundle)
+
         }
 
         viewModel.categoryNews.observe(viewLifecycleOwner, Observer { response ->
@@ -97,7 +88,7 @@ class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 is Resource.Error -> {
                     hideProgressBar()
                     response.message?.let {message ->
-                        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
                     }
                 }
                 is Resource.Loading -> {
@@ -108,6 +99,13 @@ class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChang
     }
 
     private fun setUpRecyclerView(){
+        getSettings()
+        viewModel.initialiseCategory()
+        isLastPage = false
+        isLoading = false
+        isScrolling=false
+        viewModel.getCategoryNews(category, countryCode, currentPage)
+
         newsAdapter = NewsAdapter ()
         binding.rvCategory.apply {
             adapter = newsAdapter
@@ -130,7 +128,7 @@ class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChang
             val isTotalMoreThanVisible = totalItemCount >= QUERY_PAGE_SIZE
 
             val shouldPaginate =
-                 isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
+                isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
 
             if (shouldPaginate) {
                 currentPage++
@@ -163,13 +161,7 @@ class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if(key == "country_code" || key == "language"){
-            getSettings()
-            viewModel.initialiseCategory()
-            isLastPage = false
-            isLoading = false
-            isScrolling=false
-            viewModel.getCategoryNews(category, countryCode, currentPage)
-            setUpRecyclerView()
+           setUpRecyclerView()
         }
     }
 

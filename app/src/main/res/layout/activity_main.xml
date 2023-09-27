@@ -29,25 +29,22 @@
 
             <ImageView
                 android:id="@+id/ic_search"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
                 android:layout_gravity="end"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="@dimen/_20dp"
                 android:contentDescription="@string/search"
                 android:onClick="onSearchIconClick"
-                android:src="@drawable/search_75" />
+                android:src="@drawable/ic_search" />
         </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
         <!-- Add your app's content here -->
-        <androidx.fragment.app.FragmentContainerView
+        <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            app:navGraph="@navigation/nav_graph"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            >
-        </androidx.fragment.app.FragmentContainerView>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

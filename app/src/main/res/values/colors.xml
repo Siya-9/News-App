@@ -2,7 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#FFC107</color>
-    <color name="colorPrimaryDark">#FF9800</color>
-    <color name="colorAccent">#FFEB3B</color>
+    <color name="colorPrimary">#60CF23</color>
+    <color name="actionBarTheme">#2E6F31</color>
+    <color name="colorPrimaryVariant">#9A2AE80C</color>
+    <color name="colorOnPrimary">#C6F1B6</color>
+    <color name="actionBarStyle">#36752F</color>
+    <color name="textColor">@color/black</color>
+    <color name="colorPrimaryDark">#0E2501</color>
+    <color name="colorAccent">#9A106F00</color>
+    <color name="colorSecondary">#B4EA97</color>
 </resources>

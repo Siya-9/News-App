@@ -12,34 +12,36 @@
 
     <!--Country Preference -->
     <string-array name="country_entries">
+        <item>China</item>
         <item>France</item>
+        <item>Germany</item>
         <item>India</item>
         <item>Italy</item>
-        <item>Russia</item>
         <item>USA</item>
         <item>UK</item>
     </string-array>
     <string-array name="country_values">
+        <item>cn</item>
         <item>fr</item>
+        <item>de</item>
         <item>in</item>
         <item>it</item>
-        <item>ru</item>
         <item>us</item>
         <item>uk</item>
     </string-array>
 
     <string-array name="language_entries">
+        <item>Chinese</item>
         <item>English</item>
         <item>French</item>
-        <item>Russian</item>
+        <item>German</item>
         <item>Italian</item>
-        <item>Urdu</item>
     </string-array>
     <string-array name="language_values">
+        <item>zh</item>
         <item>en</item>
         <item>fr</item>
-        <item>ru</item>
+        <item>de</item>
         <item>it</item>
-        <item>ur</item>
     </string-array>
 </resources>

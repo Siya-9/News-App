@@ -28,9 +28,6 @@ class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
         }
     }
 
-    interface TTSClickListener{
-        fun onTTSClick(text: String)
-    }
     val differ = AsyncListDiffer(this, diffCallback)
 
     override fun getItemCount(): Int = differ.currentList.size
@@ -48,7 +45,7 @@ class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
         Log.d("Adapter", "on bind view holder set up")
         val news = differ.currentList[position]
         holder.itemView.apply {
-            Glide.with(this).load(news.urlToImage).into(holder.itemView.findViewById(R.id.iv_image))
+            Glide.with(this).load(news.urlToImage).placeholder(R.drawable.ic_placeholder).into(holder.itemView.findViewById(R.id.iv_image))
             holder.itemView.findViewById<TextView>(R.id.tv_title).text = news.title
             holder.itemView.findViewById<TextView>(R.id.tv_description).text = news.description
             setOnClickListener {

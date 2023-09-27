@@ -1,5 +1,7 @@
 package com.example.newsapp.ui.fragment
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,14 +12,13 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsSearchBinding
 import com.example.newsapp.ui.MainActivity
+import com.example.newsapp.ui.NewsActivity
 import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.SEARCH_TIME_DELAY
 import com.example.newsapp.util.Resource
@@ -27,7 +28,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(),  SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsSearchBinding
     private lateinit var newsAdapter: NewsAdapter
@@ -35,6 +36,11 @@ class SearchFragment : Fragment() {
     private var language = "en"
     private var currentPage = 1
     private var keyword : String= ""
+
+    var isLastPage = false
+    var isLoading = false
+    var isScrolling=false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,18 +54,9 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
-        getSettings()
         setUpRecyclerView()
 
-        val navController = findNavController()
-        newsAdapter.setOnItemClickListener {
-            Log.d("Search Fragment", "Item clicked")
-            val bundle = Bundle().apply {
-                putSerializable("news", it)
-            }
-            navController.navigate(R.id.action_searchFragment_to_newsFragment, bundle)
-            Log.d("Search Fragment", "Navigated")
-        }
+
         // coroutine to delay search request on api
         var job : Job? = null
 
@@ -75,6 +72,15 @@ class SearchFragment : Fragment() {
                     viewModel.getSearchNews(keyword, language, currentPage)
                 }
             }
+        }
+
+        newsAdapter.setOnItemClickListener {
+            val intent = Intent(context, NewsActivity::class.java)
+            intent.putExtra("url", it.url)
+                .putExtra("title", it.title)
+                .putExtra("description", it.description)
+                .putExtra("content", it.content)
+            context?.startActivity(intent)
         }
 
         viewModel.searchNews.observe(viewLifecycleOwner, Observer {
@@ -110,6 +116,12 @@ class SearchFragment : Fragment() {
         language = setLanguage ?: "en"
     }
     private fun setUpRecyclerView() {
+        getSettings()
+        viewModel.initialiseSearch()
+        isLastPage = false
+        isLoading = false
+        isScrolling=false
+
         newsAdapter = NewsAdapter()
         binding.rvSearchNews.apply {
             adapter = newsAdapter
@@ -126,9 +138,7 @@ class SearchFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
     }
 
-    var isLastPage = false
-    var isLoading = false
-    var isScrolling=false
+
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -159,6 +169,12 @@ class SearchFragment : Fragment() {
             if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                 isScrolling=true
             }
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key == "country_code" || key == "language"){
+            setUpRecyclerView()
         }
     }
 }
