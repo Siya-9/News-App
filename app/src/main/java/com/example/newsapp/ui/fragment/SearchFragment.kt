@@ -28,7 +28,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment(),  SharedPreferences.OnSharedPreferenceChangeListener {
+class SearchFragment(private val searchText: String?) : Fragment(),  SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsSearchBinding
     private lateinit var newsAdapter: NewsAdapter
@@ -54,6 +54,7 @@ class SearchFragment : Fragment(),  SharedPreferences.OnSharedPreferenceChangeLi
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
+
         setUpRecyclerView()
 
 
@@ -72,6 +73,9 @@ class SearchFragment : Fragment(),  SharedPreferences.OnSharedPreferenceChangeLi
                     viewModel.getSearchNews(keyword, language, currentPage)
                 }
             }
+        }
+        if(!searchText.isNullOrBlank()){
+            binding.etSearch.setText(searchText)
         }
 
         newsAdapter.setOnItemClickListener {

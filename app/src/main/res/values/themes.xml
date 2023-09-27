@@ -7,10 +7,13 @@
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorAccent">#106F00</item>
-        <item name="actionBarTheme">@color/actionBarTheme</item>
-        <item name="actionBarStyle">@color/actionBarStyle</item>
+<!--        <item name="actionBarTheme">@color/actionBarTheme</item>-->
+<!--        <item name="actionBarStyle">@color/actionBarStyle</item>-->
 
         <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondaryContainer">@color/colorSecondary</item>
+        <item name="colorOnSurface">@color/colorSecondary</item>
+        <item name="colorPrimarySurface">@color/colorSecondary</item>
         <item name="radioButtonStyle">@style/Widget.Cupcake.CompoundButton.RadioButton</item>
     </style>
 

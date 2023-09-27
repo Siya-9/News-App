@@ -8,7 +8,7 @@
     <color name="colorOnPrimary">#C6F1B6</color>
     <color name="actionBarStyle">#36752F</color>
     <color name="textColor">@color/black</color>
-    <color name="colorPrimaryDark">#0E2501</color>
+    <color name="colorPrimaryDark">#214E08</color>
     <color name="colorAccent">#9A106F00</color>
     <color name="colorSecondary">#B4EA97</color>
 </resources>
