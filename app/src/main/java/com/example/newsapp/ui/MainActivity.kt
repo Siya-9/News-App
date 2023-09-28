@@ -22,10 +22,12 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.newsapp.R
+import com.example.newsapp.database.NewsDao
 import com.example.newsapp.database.NewsDatabase
 import com.example.newsapp.ui.fragment.CategoryFragment
 import com.example.newsapp.ui.fragment.SavedFragment
 import com.example.newsapp.ui.fragment.SearchFragment
+import com.example.newsapp.ui.fragment.SearchSavedFragment
 import com.example.newsapp.viewmodel.NewsRepository
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.example.newsapp.viewmodel.NewsViewModelProviderFactory
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun openSavedFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SavedFragment())
+            .replace(R.id.fragment_container, SavedFragment(), "SavedFragment")
             .commit()
     }
 
@@ -184,12 +186,13 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val newsRepository = NewsRepository(NewsDatabase(this))
+        setContentView(R.layout.activity_main)
+        val newsDao=NewsDatabase(this).getNewsDao()
+        val newsRepository = NewsRepository(NewsDatabase(this),newsDao)
         val viewModelProviderFactory = NewsViewModelProviderFactory(application, newsRepository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
 
-        setContentView(R.layout.activity_main)
+
 
         if(savedInstanceState == null){
           openTrendingFragment()
@@ -268,7 +271,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onSearchIconClick(view : View){
-        openSearchFragment("")
+        val savedFragment =   supportFragmentManager.findFragmentByTag("SavedFragment")
+        if( savedFragment != null && savedFragment.isVisible){
+            Toast.makeText(this, "Saved Fragment", Toast.LENGTH_SHORT).show()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, SearchSavedFragment())
+                .addToBackStack(null)
+                .commit()
+        }else{
+            openSearchFragment("")
+        }
     }
 
     override fun onBackPressed() {

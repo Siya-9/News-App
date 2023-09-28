@@ -9,7 +9,7 @@ import com.example.newsapp.model.News
 
 @Database(
     entities = [News :: class],
-    version = 1
+    version = 2
 )
 
 @TypeConverters(Converters::class)
@@ -31,6 +31,6 @@ abstract class NewsDatabase : RoomDatabase() {
             context.applicationContext,
             NewsDatabase :: class.java,
             "news_db.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 }

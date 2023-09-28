@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,42 +16,69 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsSavedBinding
+import com.example.newsapp.databinding.NewsSearchBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.NewsActivity
+import com.example.newsapp.util.Constants
 import com.example.newsapp.viewmodel.NewsViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SavedFragment : Fragment(R.layout.news_saved) {
-    val savedAdapter=NewsAdapter()
+class SearchSavedFragment  : Fragment(R.layout.news_search) {
+    private lateinit var searchSavedAdapter: NewsAdapter
     private lateinit var viewModel: NewsViewModel
-    private lateinit var binding : NewsSavedBinding
+    private lateinit var binding : NewsSearchBinding
+    private var keyword : String= ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = NewsSavedBinding.inflate(inflater, container, false)
+        binding = NewsSearchBinding.inflate(inflater, container, false)
+        searchSavedAdapter = NewsAdapter()
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).viewModel
 
-        binding.rvSavedNews.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvSavedNews.adapter = savedAdapter
+        binding.rvSearchNews.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvSearchNews.adapter = searchSavedAdapter
 
-        viewModel.getAllSavedNews().observe(viewLifecycleOwner) { savedNewsList ->
-            savedAdapter.differ.submitList(savedNewsList)
+        var job : Job? = null
+
+        binding.etSearch.addTextChangedListener {editable ->
+            job?.cancel()
+            job = MainScope().launch {
+                delay(Constants.SEARCH_TIME_DELAY)
+                if(editable.toString().isNotEmpty()){
+                    keyword = editable.toString()
+                    Toast.makeText(requireContext(), keyword, Toast.LENGTH_SHORT).show()
+                    searchSavedAdapter = NewsAdapter()
+                    viewModel.searchSavedNews(keyword)
+                    binding.rvSearchNews.apply {
+                        adapter = searchSavedAdapter
+                        layoutManager = LinearLayoutManager(activity)
+                    }
+                    Log.d("search", viewModel.searchSavedNews(keyword).toString())
+                }
+            }
+        }
+
+        viewModel.searchSavedNews(keyword).observe(viewLifecycleOwner) { searchSavedNewsList ->
+            searchSavedAdapter.differ.submitList(searchSavedNewsList)
 
             // Show/hide the empty message based on the list size
-            if (savedNewsList.isEmpty()) {
-                binding.tvEmpty.visibility = View.VISIBLE
-            } else {
-                binding.tvEmpty.visibility = View.GONE
-            }
+//            if (savedNewsList.isEmpty()) {
+//                binding.Empty.visibility = View.VISIBLE
+//            } else {
+//                binding.Empty.visibility = View.GONE
+//            }
 
-            savedAdapter.setOnItemClickListener {
+            searchSavedAdapter.setOnItemClickListener {
                 if(it.url != null) {
                     val description = it.description ?: "description"
                     val title = it.title ?: "title"
@@ -83,7 +112,7 @@ class SavedFragment : Fragment(R.layout.news_saved) {
                     if (direction == ItemTouchHelper.LEFT) {
                         // Get the position of the swiped item
                         val position = viewHolder.adapterPosition
-                        val swipedItem = savedAdapter.getItemAtPosition(position)
+                        val swipedItem = searchSavedAdapter.getItemAtPosition(position)
                         // Call the deleteItem function in the adapter
                         lifecycleScope.launch {
                             viewModel.deleteSavedNews(swipedItem)
@@ -92,7 +121,7 @@ class SavedFragment : Fragment(R.layout.news_saved) {
                 }
             }
             val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-            itemTouchHelper.attachToRecyclerView(binding.rvSavedNews)
+            itemTouchHelper.attachToRecyclerView(binding.rvSearchNews)
         }
     }
 }

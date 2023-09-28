@@ -1,5 +1,6 @@
 package com.example.newsapp.ui.fragment
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -11,17 +12,21 @@ import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsCategoryBinding
+import com.example.newsapp.model.News
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.NewsActivity
 import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
+import kotlinx.coroutines.launch
 
 
 class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -68,7 +73,6 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
                     .putExtra("content", content)
                 context?.startActivity(intent)
             }
-
         }
 
         viewModel.categoryNews.observe(viewLifecycleOwner, Observer { response ->
@@ -94,8 +98,54 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
                 is Resource.Loading -> {
                     showProgressBar()
                 }
+                else -> {
+                    Log.d("Else block clicked","else Statement used")
+                }
             }
         }  )
+        // Define your ItemTouchHelperCallback
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (direction == ItemTouchHelper.RIGHT||direction== ItemTouchHelper.LEFT) {
+                    val pos=viewHolder.adapterPosition
+                    val swipedNews=newsAdapter.getItemAtPosition(pos)
+                    showSaveItemDialog(swipedNews,pos)
+                }
+            }
+            private fun showSaveItemDialog(swipedNews: News, position: Int) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Save Item")
+                builder.setMessage("Do you want to save this item?")
+                builder.setCancelable(false)
+                builder.setPositiveButton("Save") { dialog, _ ->
+                    lifecycleScope.launch {
+                        viewModel.insertSavedNews(swipedNews)
+                    }
+                    dialog.dismiss()
+                    newsAdapter.notifyItemChanged(position)
+                }
+                builder.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                    newsAdapter.notifyItemChanged(position)
+                }
+                val dialog = builder.create()
+                dialog.show()
+            }
+        }
+        // Create an ItemTouchHelper instance
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        // Attach the ItemTouchHelper to the RecyclerView
+        itemTouchHelper.attachToRecyclerView(binding.rvCategory)
     }
 
     private fun setUpRecyclerView(){
@@ -170,6 +220,4 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
-
-
 }

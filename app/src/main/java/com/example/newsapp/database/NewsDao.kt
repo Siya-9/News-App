@@ -19,4 +19,7 @@ interface NewsDao {
 
     @Delete
     suspend fun deleteArticle(news: News)
+
+    @Query("SELECT * from news where title like '%'||:keyword||'%' ")
+    fun searchArticles(keyword:String) :  LiveData<List<News>>
 }

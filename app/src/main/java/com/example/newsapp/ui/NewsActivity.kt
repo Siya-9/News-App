@@ -90,7 +90,6 @@ class NewsActivity : AppCompatActivity() , Read{
 
 
 }
-
 interface Read {
     fun onTTSClick(text: String)
 }

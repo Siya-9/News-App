@@ -60,4 +60,7 @@ class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
     fun setOnItemClickListener(listener : (News) -> Unit){
         onItemClickListener = listener
     }
+    fun getItemAtPosition(position: Int): News {
+        return differ.currentList[position]
+    }
 }

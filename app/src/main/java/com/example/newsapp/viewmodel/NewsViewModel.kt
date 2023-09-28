@@ -8,8 +8,10 @@ import android.net.NetworkCapabilities.TRANSPORT_ETHERNET
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.newsapp.model.News
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsapp.util.Resource
@@ -143,5 +145,24 @@ class NewsViewModel(
             capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
             else -> false
         }
+    }
+
+
+//by Syntax
+    fun getAllSavedNews(): LiveData<List<News>> {
+        return newsRepository.allNews
+    }
+
+    suspend fun insertSavedNews(savedNews: News) {
+        newsRepository.insert(savedNews)
+    }
+
+    suspend fun deleteSavedNews(savedNews: News) {
+        newsRepository.delete(savedNews)
+    }
+
+    fun searchSavedNews(keyword:String): LiveData<List<News>> {
+        Log.d("search", "NVM")
+        return newsRepository.search(keyword)
     }
 }
