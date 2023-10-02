@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsSavedBinding
@@ -41,7 +42,7 @@ class SavedFragment : Fragment(R.layout.news_saved) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).viewModel
-
+        binding.frSaved.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
         binding.rvSavedNews.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSavedNews.adapter = savedAdapter
 

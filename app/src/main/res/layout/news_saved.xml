@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.slidingpanelayout.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/background"
+    android:id="@+id/fr_saved"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:layout_width="501dp"
+    android:layout_weight="1"
     android:background="@color/background"
     android:layout_height="match_parent">
 
@@ -39,3 +45,13 @@
         android:textColor="#8D6E63"
         android:textSize="14sp" />
 </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/sliding_pane_detail_container"
+        android:layout_width="500dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:name="com.example.newsapp.ui.fragment.SearchFragment"/>
+
+
+</androidx.slidingpanelayout.widget.SlidingPaneLayout>
