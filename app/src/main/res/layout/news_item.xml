@@ -26,7 +26,7 @@
             <ImageView
                 android:id="@+id/iv_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_margin="@dimen/_10dp"
                 android:src="@mipmap/ic_launcher_round" />
 
@@ -35,7 +35,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10dp"
-                android:textColor="@android:color/black"
                 android:textSize="@dimen/_14sp" />
 
             <TextView
@@ -43,7 +42,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10dp"
-                android:textColor="@android:color/darker_gray"
                 android:textSize="@dimen/_12sp" />
 
         </LinearLayout>

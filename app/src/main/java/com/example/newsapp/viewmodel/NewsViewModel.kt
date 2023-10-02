@@ -32,6 +32,7 @@ class NewsViewModel(
     val searchNews :  MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     private var searchNewsResponse : NewsResponse? = null
 
+
     private fun paginateCategoryNews(response : Response<NewsResponse>) : Resource<NewsResponse>{
         if(response.isSuccessful){
             response.body()?. let{
@@ -147,10 +148,9 @@ class NewsViewModel(
         }
     }
 
-
-//by Syntax
-    fun getAllSavedNews(): LiveData<List<News>> {
-        return newsRepository.allNews
+    fun getAllSavedNews(keyword : String): LiveData<List<News>> {
+    Log.d("Search", "NVM")
+        return newsRepository.search(keyword)
     }
 
     suspend fun insertSavedNews(savedNews: News) {
@@ -161,8 +161,5 @@ class NewsViewModel(
         newsRepository.delete(savedNews)
     }
 
-    fun searchSavedNews(keyword:String): LiveData<List<News>> {
-        Log.d("search", "NVM")
-        return newsRepository.search(keyword)
-    }
+
 }

@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:id="@+id/fr_search"
     tools:context=".ui.fragment.SearchFragment">
 
@@ -13,10 +14,12 @@
 
         <EditText
             android:id="@+id/et_Search"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/_250dp"
             android:layout_height="wrap_content"
             android:hint="@string/search"
+            android:importantForAutofill="no"
             android:inputType="text"
+            android:textColorHint="#8D6E63"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

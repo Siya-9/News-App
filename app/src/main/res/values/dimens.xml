@@ -12,4 +12,6 @@
     <dimen name="_30dp">30dp</dimen>
 
     <dimen name="radio_button_padding">8dp</dimen>
+    <dimen name="_250dp">250dp</dimen>
+    <dimen name="_5dp">5dp</dimen>
 </resources>

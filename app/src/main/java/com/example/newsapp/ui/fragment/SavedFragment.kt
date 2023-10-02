@@ -1,11 +1,12 @@
 package com.example.newsapp.ui.fragment
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,13 +17,18 @@ import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsSavedBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.NewsActivity
+import com.example.newsapp.util.Constants
 import com.example.newsapp.viewmodel.NewsViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SavedFragment : Fragment(R.layout.news_saved) {
     val savedAdapter=NewsAdapter()
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsSavedBinding
+    private var keyword : String= ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +45,22 @@ class SavedFragment : Fragment(R.layout.news_saved) {
         binding.rvSavedNews.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSavedNews.adapter = savedAdapter
 
-        viewModel.getAllSavedNews().observe(viewLifecycleOwner) { savedNewsList ->
+        var job : Job? = null
+
+        binding.etSearch.addTextChangedListener {editable ->
+            job?.cancel()
+            job = MainScope().launch {
+                delay(Constants.SEARCH_TIME_DELAY)
+                keyword = editable.toString()
+                setUpRecyclerView()
+            }
+        }
+
+        setUpRecyclerView()
+    }
+
+    private fun setUpRecyclerView() {
+        viewModel.getAllSavedNews(keyword).observe(viewLifecycleOwner) { savedNewsList ->
             savedAdapter.differ.submitList(savedNewsList)
 
             // Show/hide the empty message based on the list size
@@ -54,8 +75,6 @@ class SavedFragment : Fragment(R.layout.news_saved) {
                     val description = it.description ?: "description"
                     val title = it.title ?: "title"
                     val content = it.content ?: "content"
-                    Log.d("LogBefore", description)
-                    Log.d("LogBefore", content)
                     val intent = Intent(context, NewsActivity::class.java)
                     intent.putExtra("url", it.url)
                         .putExtra("title", title)
@@ -85,9 +104,22 @@ class SavedFragment : Fragment(R.layout.news_saved) {
                         val position = viewHolder.adapterPosition
                         val swipedItem = savedAdapter.getItemAtPosition(position)
                         // Call the deleteItem function in the adapter
-                        lifecycleScope.launch {
-                            viewModel.deleteSavedNews(swipedItem)
+                        val builder = AlertDialog.Builder(requireContext())
+                        builder.setTitle("Delete Item")
+                        builder.setMessage("Do you want to delete this item?")
+                        builder.setCancelable(false)
+                        builder.setPositiveButton("Delete") { dialog, _ ->
+                            lifecycleScope.launch {
+                                viewModel.deleteSavedNews(swipedItem)
+                            }
+                            dialog.dismiss()
                         }
+                        builder.setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                            savedAdapter.notifyItemChanged(position)
+                        }
+                        val dialog = builder.create()
+                        dialog.show()
                     }
                 }
             }
@@ -96,3 +128,5 @@ class SavedFragment : Fragment(R.layout.news_saved) {
         }
     }
 }
+
+

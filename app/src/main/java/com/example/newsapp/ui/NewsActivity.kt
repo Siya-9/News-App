@@ -6,31 +6,38 @@ import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
 import com.example.newsapp.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Locale
 
-class NewsActivity : AppCompatActivity() , Read{
+class NewsActivity : AppCompatActivity(){
 
-    private var languagePreference = "en"
+    private var countryCode = "en"
     private lateinit var textToSpeech: TextToSpeech
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.news_fragment)
 
+
+        val toolbar = findViewById<Toolbar>(R.id.tb_news)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        languagePreference = sharedPreferences.getString("language", "en").toString()
+        countryCode = sharedPreferences.getString("country_code", "in").toString()
 
         textToSpeech = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 Log.d("News", "Success")
-                when(languagePreference){
+                when(countryCode){
                     "fr" -> textToSpeech.language = Locale.FRENCH
                     "it" -> textToSpeech.language = Locale.ITALIAN
                     "de" -> textToSpeech.language = Locale.GERMAN
-                    "zh" -> textToSpeech.language = Locale.CHINESE
+                    "cn" -> textToSpeech.language = Locale.CHINESE
                     else -> textToSpeech.language = Locale.ENGLISH
                 }
             }
@@ -45,8 +52,8 @@ class NewsActivity : AppCompatActivity() , Read{
             }
         }
 
-        var text : String = " "
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener() {
+        var text = " "
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
             val title = intent.getStringExtra("title")
             if (title != null) {
                 text += title
@@ -67,7 +74,7 @@ class NewsActivity : AppCompatActivity() , Read{
         }
     }
 
-    override fun onTTSClick(text: String) {
+    private fun onTTSClick(text: String) {
         Log.d("Log", "Reading")
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
         Log.d("Log", "Read")
@@ -89,7 +96,4 @@ class NewsActivity : AppCompatActivity() , Read{
     }
 
 
-}
-interface Read {
-    fun onTTSClick(text: String)
 }

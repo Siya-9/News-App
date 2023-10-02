@@ -17,15 +17,14 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            style="@style/TextAppearance.AppCompat.Headline"
             android:gravity="bottom">
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="top"
-            android:background="@color/white"
-            >
+            app:titleTextColor="@color/white"
+            android:layout_gravity="top" >
 
             <ImageView
                 android:id="@+id/ic_search"
@@ -35,7 +34,8 @@
                 android:layout_marginEnd="@dimen/_20dp"
                 android:contentDescription="@string/search"
                 android:onClick="onSearchIconClick"
-                android:src="@drawable/ic_search" />
+                android:src="@drawable/ic_search"
+                tools:ignore="TouchTargetSizeCheck" />
         </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
         <!-- Add your app's content here -->
@@ -65,10 +65,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-
+        android:background="@color/nav_color"
         android:fitsSystemWindows="true"
-        android:background="@color/white"
-        app:itemTextColor="@color/black"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/nav_menu"
+        tools:ignore="VisualLintBounds" />
 </androidx.drawerlayout.widget.DrawerLayout>
 

@@ -8,13 +8,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_48dp"
+        android:id="@+id/ab_news"
+        android:gravity="top" >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tb_news"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10dp"
+            style="@style/TextAppearance.AppCompat.Title"
+            app:titleTextColor="@color/toolbar_title"
+            app:title="@string/app_name" />
+    </com.google.android.material.appbar.AppBarLayout>
     <!-- Add your app's content here -->
+
     <WebView
         android:id="@+id/wv_news"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

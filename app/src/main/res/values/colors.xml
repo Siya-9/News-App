@@ -8,7 +8,14 @@
     <color name="colorOnPrimary">#C6F1B6</color>
     <color name="actionBarStyle">#36752F</color>
     <color name="textColor">@color/black</color>
-    <color name="colorPrimaryDark">#214E08</color>
-    <color name="colorAccent">#9A106F00</color>
-    <color name="colorSecondary">#B4EA97</color>
+    <color name="colorPrimaryDark">#102902</color>
+    <color name="colorSurfaceDark">#214E08</color>
+    <color name="colorAccent">#106F00</color>
+    <color name="colorSecondaryContainer">#B4EA97</color>
+    <color name="colorSurface">#2A8F00</color>
+
+    <color name="toolbar_title">@color/white</color>
+    <color name="nav_color">@color/white</color>
+
+    <color name="background">#E6FFDB</color>
 </resources>

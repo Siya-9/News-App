@@ -20,8 +20,6 @@ class NewsRepository(
     suspend fun getSearchNews(searchQuery : String, language : String,pageNumber: Int)=
         RetrofitInstance.api.getSearchNews(searchQuery,language, pageNumber)
 
-    val allNews:LiveData<List<News>> =newsDao.getAllArticles()
-
     suspend fun insert(news:News){
         newsDao.upsert(news)
     }
@@ -30,8 +28,8 @@ class NewsRepository(
         newsDao.deleteArticle(news)
     }
 
-    fun search(keyword : String) :LiveData<List<News>> {
-        Log.d("search", "repo")
-        return newsDao.searchArticles(keyword)
+    fun search(keyword : String) : LiveData<List<News>> {
+        Log.d("Search", "repo")
+        return newsDao.getAllArticles(keyword)
     }
 }

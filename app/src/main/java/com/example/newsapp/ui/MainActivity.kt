@@ -13,6 +13,9 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,12 +25,10 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.newsapp.R
-import com.example.newsapp.database.NewsDao
 import com.example.newsapp.database.NewsDatabase
 import com.example.newsapp.ui.fragment.CategoryFragment
 import com.example.newsapp.ui.fragment.SavedFragment
 import com.example.newsapp.ui.fragment.SearchFragment
-import com.example.newsapp.ui.fragment.SearchSavedFragment
 import com.example.newsapp.viewmodel.NewsRepository
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.example.newsapp.viewmodel.NewsViewModelProviderFactory
@@ -37,11 +38,10 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var viewModel: NewsViewModel
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
-
+    lateinit var viewModel: NewsViewModel
 
     private val speechRecognizer: SpeechRecognizer by lazy {
         SpeechRecognizer.createSpeechRecognizer(
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                             openSearchFragment(searchText)
                         }else if(result[0].contains("search")){
                         val searchText = string.drop((string.indexOf("search") + 7))
-                        openSearchFragment("")
+                        openSearchFragment(searchText)
                         }else{
                             Toast.makeText(this@MainActivity,"Command not found", Toast.LENGTH_SHORT).show()
                         }
@@ -131,36 +131,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openSavedFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = GONE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, SavedFragment(), "SavedFragment")
             .commit()
     }
 
     private fun openTechnologyFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, CategoryFragment("technology"))
             .commit()
     }
 
     private fun openHealthFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, CategoryFragment("health"))
             .commit()
     }
 
     private fun openBusinessFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, CategoryFragment("business"))
             .commit()
     }
 
     private fun openTrendingFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, CategoryFragment("trending"))
             .commit()
     }
 
     private fun openSportsFragment() {
+        findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, CategoryFragment("sports"))
             .commit()
@@ -187,6 +193,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val newsDao=NewsDatabase(this).getNewsDao()
         val newsRepository = NewsRepository(NewsDatabase(this),newsDao)
         val viewModelProviderFactory = NewsViewModelProviderFactory(application, newsRepository)
@@ -212,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
 
 
-       findViewById<FloatingActionButton>(R.id.fab_voice).setOnTouchListener { view, motionEvent ->
+       findViewById<FloatingActionButton>(R.id.fab_voice).setOnTouchListener { _, motionEvent ->
            Log.d("Voice", "Touched")
             when (motionEvent.action) {
                 MotionEvent.ACTION_UP -> {
@@ -235,6 +242,7 @@ class MainActivity : AppCompatActivity() {
 
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
+            findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
             when (menuItem.itemId) {
                 R.id.nav_trending -> {
                     openTrendingFragment()
@@ -271,16 +279,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onSearchIconClick(view : View){
-        val savedFragment =   supportFragmentManager.findFragmentByTag("SavedFragment")
-        if( savedFragment != null && savedFragment.isVisible){
-            Toast.makeText(this, "Saved Fragment", Toast.LENGTH_SHORT).show()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SearchSavedFragment())
-                .addToBackStack(null)
-                .commit()
-        }else{
-            openSearchFragment("")
-        }
+        openSearchFragment("")
     }
 
     override fun onBackPressed() {

@@ -2,21 +2,22 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.NewsApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
-        <item name="colorPrimaryContainer">@color/colorSecondary</item>
-        <item name="colorAccent">#106F00</item>
-<!--        <item name="actionBarTheme">@color/actionBarTheme</item>-->
-<!--        <item name="actionBarStyle">@color/actionBarStyle</item>-->
+        <item name="colorPrimaryContainer">@color/colorSecondaryContainer</item>
+        <item name="colorSecondaryContainer">@color/colorSecondaryContainer</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionBarTheme">@color/white</item>
 
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryContainer">@color/colorSecondary</item>
-        <item name="colorOnSurface">@color/colorSecondary</item>
-        <item name="colorPrimarySurface">@color/colorSecondary</item>
-        <item name="radioButtonStyle">@style/Widget.Cupcake.CompoundButton.RadioButton</item>
+        <!--Drawer layout, toolbar, toolbar text-->
+        <item name="colorSurface">#1F6402</item>
+        <item name="colorOnSurface">@color/white</item>
+
+
     </style>
-
     <style name="Theme.NewsApp" parent="Base.Theme.NewsApp" />
+
+
 </resources>

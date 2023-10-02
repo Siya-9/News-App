@@ -9,8 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_48dp"
         android:id="@+id/ab_settings"
-        android:background="@color/white"
-        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,7 +18,9 @@
             android:id="@+id/tb_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
+            android:layout_marginStart="@dimen/_10dp"
+            style="@style/TextAppearance.AppCompat.Title"
+            app:titleTextColor="@color/toolbar_title"
             app:title="@string/settings" />
     </com.google.android.material.appbar.AppBarLayout>
 

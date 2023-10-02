@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/background"
     android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/_5dp">
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="@dimen/_250dp"
+            android:layout_height="48dp"
+            android:autofillHints=""
+            android:hint="@string/search"
+            android:inputType="text" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSavedNews"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_search"/>
 
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Saved News :)"
-        android:textColor="#888888"
-        android:textSize="14dp"
         android:layout_centerInParent="true"
         android:gravity="center"
-        />
+        android:text="@string/no_saved_news"
+        android:textColor="#8D6E63"
+        android:textSize="14sp" />
 </RelativeLayout>

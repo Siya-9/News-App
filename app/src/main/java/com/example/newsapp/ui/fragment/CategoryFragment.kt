@@ -17,19 +17,19 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.NewsCategoryBinding
 import com.example.newsapp.model.News
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.NewsActivity
-import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsapp.util.Resource
 import com.example.newsapp.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
 
 
-class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class CategoryFragment(private val category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsCategoryBinding
@@ -39,6 +39,7 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
     private var countryCode : String = "in"
     private var currentPage = 1
 
+    private var cat = "trending"
     var isLastPage = false
     var isLoading = false
     var isScrolling=false
@@ -55,9 +56,11 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        cat = category
         viewModel = (activity as MainActivity).viewModel
         setUpRecyclerView()
+
+        binding.frCategory.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
 
         newsAdapter.setOnItemClickListener {
             if(it.url != null) {
@@ -82,7 +85,7 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
                     response.data?.let {
                             newsResponse ->
                         newsAdapter.differ.submitList(newsResponse.articles.toList())
-                        val totalPages = newsResponse.totalResults / Constants.QUERY_PAGE_SIZE + 2
+                        val totalPages = newsResponse.totalResults / QUERY_PAGE_SIZE + 2
                         isLastPage = viewModel.categoryNewsPage == totalPages
                         isLoading = false
                         Log.d("Category Fragment", "Response loaded")
@@ -183,7 +186,7 @@ class CategoryFragment(val category: String) : Fragment(), SharedPreferences.OnS
             if (shouldPaginate) {
                 currentPage++
                 Log.d("Pagination", "Loading page $currentPage")
-                viewModel.getCategoryNews(category,countryCode,currentPage)
+                viewModel.getCategoryNews(cat,countryCode,currentPage)
                 isScrolling=false
             }
         }

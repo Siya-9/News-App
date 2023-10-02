@@ -16,6 +16,7 @@
             app:entryValues="@array/language_values"
             app:title="Language"
             app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

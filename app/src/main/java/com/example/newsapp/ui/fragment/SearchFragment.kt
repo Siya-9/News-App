@@ -228,4 +228,16 @@ class SearchFragment(private val searchText: String?) : Fragment(),  SharedPrefe
             setUpRecyclerView()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("keyword", keyword)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            keyword = savedInstanceState.getString("keyword").toString()
+        }
+    }
 }
