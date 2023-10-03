@@ -25,7 +25,9 @@
             android:layout_height="48dp"
             android:autofillHints=""
             android:hint="@string/search"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColor="@color/editTextColor"
+            android:textColorHint="#2E7D32" />
 
     </LinearLayout>
 
@@ -42,7 +44,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/no_saved_news"
-        android:textColor="#8D6E63"
+        android:textColor="#795548"
         android:textSize="14sp" />
 </RelativeLayout>
 

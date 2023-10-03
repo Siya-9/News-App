@@ -128,6 +128,12 @@ class SavedFragment : Fragment(R.layout.news_saved) {
             itemTouchHelper.attachToRecyclerView(binding.rvSavedNews)
         }
     }
+
+    override fun onDestroyView() {
+        parentFragment?.let { viewModel.getAllSavedNews(keyword).removeObservers(it.viewLifecycleOwner) }
+        super.onDestroyView()
+    }
 }
+
 
 

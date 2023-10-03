@@ -32,7 +32,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchFragment(private val searchText: String?) : Fragment(),  SharedPreferences.OnSharedPreferenceChangeListener {
+class SearchFragment() : Fragment(),  SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsSearchBinding
     private lateinit var newsAdapter: NewsAdapter
@@ -58,7 +58,7 @@ class SearchFragment(private val searchText: String?) : Fragment(),  SharedPrefe
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = (activity as MainActivity).viewModel
-
+        keyword = viewModel.keyword
         setUpRecyclerView()
 
 
@@ -78,8 +78,8 @@ class SearchFragment(private val searchText: String?) : Fragment(),  SharedPrefe
                 }
             }
         }
-        if(!searchText.isNullOrBlank()){
-            binding.etSearch.setText(searchText)
+        if(keyword.isNotBlank()){
+            binding.etSearch.setText(keyword)
         }
 
         newsAdapter.setOnItemClickListener {

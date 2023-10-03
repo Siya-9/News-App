@@ -11,12 +11,12 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +38,7 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    private var isListening = false
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             it?.let {
                 if (it) {
-                    Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
+                    makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -67,10 +68,12 @@ class MainActivity : AppCompatActivity() {
         )
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         speechRecognizer.setRecognitionListener(object: RecognitionListener {
-            override fun onReadyForSpeech(p0: Bundle?) {  }
+            override fun onReadyForSpeech(p0: Bundle?) {
+                makeText(this@MainActivity,"Speak", Toast.LENGTH_SHORT).show()
+            }
 
             override fun onBeginningOfSpeech() {
-                Toast.makeText(this@MainActivity,"Listening", Toast.LENGTH_SHORT).show()
+                makeText(this@MainActivity,"Listening", Toast.LENGTH_SHORT).show()
             }
 
             override fun onRmsChanged(p0: Float) { }
@@ -84,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Voice", "$result")
                     if (result != null) {
                         val string = result[0].lowercase()
+                        Toast.makeText(this@MainActivity, string, Toast.LENGTH_SHORT).show()
                         if(string.contains("sports")){
                             openSportsFragment()
                         }else if(string.contains("trending")){
@@ -106,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                         val searchText = string.drop((string.indexOf("search") + 7))
                         openSearchFragment(searchText)
                         }else{
-                            Toast.makeText(this@MainActivity,"Command not found", Toast.LENGTH_SHORT).show()
+                            makeText(this@MainActivity,"Command not found", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -119,8 +123,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openSearchFragment(searchText : String) {
+        viewModel.keyword = searchText
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SearchFragment(searchText))
+            .replace(R.id.fragment_container, SearchFragment())
             .addToBackStack(null)
             .commit()
     }
@@ -138,37 +143,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openTechnologyFragment() {
+        viewModel.category = "technology"
         findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CategoryFragment("technology"))
+            .replace(R.id.fragment_container, CategoryFragment())
             .commit()
     }
 
     private fun openHealthFragment() {
+        viewModel.category = "health"
         findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CategoryFragment("health"))
+            .replace(R.id.fragment_container, CategoryFragment())
             .commit()
     }
 
     private fun openBusinessFragment() {
+        viewModel.category = "business"
         findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CategoryFragment("business"))
+            .replace(R.id.fragment_container, CategoryFragment())
             .commit()
     }
 
     private fun openTrendingFragment() {
+        viewModel.category = "trending"
         findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CategoryFragment("trending"))
+            .replace(R.id.fragment_container, CategoryFragment())
             .commit()
     }
 
     private fun openSportsFragment() {
+        viewModel.category = "sports"
         findViewById<ImageView>(R.id.ic_search).visibility = VISIBLE
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CategoryFragment("sports"))
+            .replace(R.id.fragment_container, CategoryFragment())
             .commit()
     }
 
@@ -199,11 +209,11 @@ class MainActivity : AppCompatActivity() {
         val viewModelProviderFactory = NewsViewModelProviderFactory(application, newsRepository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory)[NewsViewModel::class.java]
 
-
-
         if(savedInstanceState == null){
+          viewModel.category = "trending"
           openTrendingFragment()
         }
+
         drawerLayout = findViewById(R.id.drawer_layout)
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -219,26 +229,18 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
 
 
-       findViewById<FloatingActionButton>(R.id.fab_voice).setOnTouchListener { _, motionEvent ->
-           Log.d("Voice", "Touched")
-            when (motionEvent.action) {
-                MotionEvent.ACTION_UP -> {
-                    Log.d("Voice", "Touch up")
-                    speechRecognizer.stopListening()
-                    return@setOnTouchListener true
-                }
-                MotionEvent.ACTION_DOWN -> {
-                    Log.d("Voice", "Touch down")
-                    getPermissionOverO(this) {
-                        startListen()
-                    }
-                    return@setOnTouchListener true
-                }
-                else -> {
-                    return@setOnTouchListener true
-                }
-            }
-        }
+       findViewById<FloatingActionButton>(R.id.fab_voice).setOnClickListener {
+           if (!isListening) {
+               isListening = true
+               getPermissionOverO(this) {
+                   startListen()
+               }
+           } else {
+               speechRecognizer.stopListening()
+               isListening = false
+           }
+       }
+
 
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->

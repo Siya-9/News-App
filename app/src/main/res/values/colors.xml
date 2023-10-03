@@ -18,4 +18,5 @@
     <color name="nav_color">@color/white</color>
 
     <color name="background">#E6FFDB</color>
+    <color name="editTextColor">#000000</color>
 </resources>

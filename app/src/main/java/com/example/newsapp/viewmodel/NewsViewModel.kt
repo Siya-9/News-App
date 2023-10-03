@@ -24,6 +24,10 @@ class NewsViewModel(
     private val newsRepository : NewsRepository,
 ) : AndroidViewModel(application) {
 
+
+    var category = "trending"
+    var keyword = ""
+
     var categoryNewsPage = 1
     val categoryNews :  MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     private var categoryNewsResponse : NewsResponse? = null

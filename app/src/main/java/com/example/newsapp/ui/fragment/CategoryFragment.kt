@@ -29,7 +29,7 @@ import com.example.newsapp.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
 
 
-class CategoryFragment(private val category: String) : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class CategoryFragment() : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var viewModel: NewsViewModel
     private lateinit var binding : NewsCategoryBinding
@@ -56,8 +56,8 @@ class CategoryFragment(private val category: String) : Fragment(), SharedPrefere
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cat = category
         viewModel = (activity as MainActivity).viewModel
+        cat = viewModel.category
         setUpRecyclerView()
 
         binding.frCategory.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
@@ -157,7 +157,7 @@ class CategoryFragment(private val category: String) : Fragment(), SharedPrefere
         isLastPage = false
         isLoading = false
         isScrolling=false
-        viewModel.getCategoryNews(category, countryCode, currentPage)
+        viewModel.getCategoryNews(cat, countryCode, currentPage)
 
         newsAdapter = NewsAdapter ()
         binding.rvCategory.apply {

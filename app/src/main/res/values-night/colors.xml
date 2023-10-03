@@ -2,4 +2,6 @@
 <resources>
     <color name="toolbar_title">@color/white</color>
     <color name="nav_color">@color/black</color>
+    <color name="background">#515151</color>
+    <color name="editTextColor">#FFFFFF</color>
 </resources>

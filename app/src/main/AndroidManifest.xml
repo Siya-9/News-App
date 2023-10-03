@@ -27,7 +27,6 @@
         >
         <activity
             android:name=".ui.MainActivity"
-            android:screenOrientation="userPortrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +37,6 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings"
-            android:screenOrientation="userPortrait"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,7 +46,6 @@
         <activity
             android:name=".ui.NewsActivity"
             android:label="Settings"
-            android:screenOrientation="userPortrait"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
