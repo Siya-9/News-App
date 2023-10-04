@@ -11,6 +11,7 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -229,15 +230,21 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
 
 
-       findViewById<FloatingActionButton>(R.id.fab_voice).setOnClickListener {
-           if (!isListening) {
-               isListening = true
-               getPermissionOverO(this) {
-                   startListen()
+       findViewById<FloatingActionButton>(R.id.fab_voice).setOnTouchListener { _, motionEvent ->
+           when (motionEvent.action) {
+               MotionEvent.ACTION_UP -> {
+                   speechRecognizer.stopListening()
+                   return@setOnTouchListener true
                }
-           } else {
-               speechRecognizer.stopListening()
-               isListening = false
+               MotionEvent.ACTION_DOWN -> {
+                   getPermissionOverO(this) {
+                       startListen()
+                   }
+                   return@setOnTouchListener true
+               }
+               else -> {
+                   return@setOnTouchListener true
+               }
            }
        }
 
